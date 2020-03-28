@@ -10,6 +10,7 @@ const passportLocalMongoose = require("passport-local-mongoose")
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // const FacebookStrategy = require('passport-facebook').Strategy;
 const findOrCreate = require("mongoose-findorcreate")
+const port = process.env.PORT;
 
 const app = express()
 
@@ -56,7 +57,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new GoogleStrategy({
     clientID: process.env.G_CLIENT_ID,
     clientSecret: process.env.G_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
+    callbackURL: "https://procho-secrets.herokuapp.com/auth/google/secrets",
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -179,7 +180,6 @@ app.post("/login",function(req,res){
 })
 
 
-let port = process.env.PORT;
 
 app.listen(port || 3000, function() {
   console.log("Server started on port 3000");
