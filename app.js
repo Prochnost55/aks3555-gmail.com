@@ -31,8 +31,9 @@ mongoose.connect(process.env.DB,{useNewUrlParser:true,useUnifiedTopology: true})
 mongoose.set('useCreateIndex', true)
 
 const userSchema = new mongoose.Schema({
-  email:String,
+  username:String,
   password:String,
+  name:String,
   googleId:String,
   secret:String
 })
@@ -62,7 +63,7 @@ passport.use(new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, cb) {
     // console.log(profile);
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    User.findOrCreate({ googleId: profile.id },{name:profile.displayName, username:profile.emails[0].value}, function (err, user) {
       return cb(err, user);
     });
   }
@@ -82,7 +83,7 @@ passport.use(new GoogleStrategy({
 // ));
 
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile','email'] }));
 
 app.get('/auth/google/secrets',
   passport.authenticate('google', { failureRedirect: '/login' }),
@@ -178,8 +179,6 @@ app.post("/login",function(req,res){
     }
   })
 })
-
-
 
 app.listen(port || 3000, function() {
   console.log("Server started on port 3000");
